@@ -3,6 +3,7 @@ package com.redditclone.service;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.redditclone.exception.SpringRedditException;
@@ -20,6 +21,7 @@ public class MailService {
 	private final JavaMailSender javaMailSender;
 	private final MailContentBuilder mailContentBuilder;
 	
+	@Async
 	public void sendMail(NotificationEmail notificationEmail) {
 		MimeMessagePreparator messagePreparator = mimeMessage -> {
 			MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
