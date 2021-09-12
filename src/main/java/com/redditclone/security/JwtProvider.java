@@ -10,17 +10,21 @@ import java.security.*;
 
 import javax.annotation.PostConstruct;
 
+import static io.jsonwebtoken.Jwts.parser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import com.redditclone.exception.SpringRedditException;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
 @Service
 public class JwtProvider {
 
+	
+	
 	
 	private KeyStore keyStore;
 		
@@ -50,4 +54,26 @@ public class JwtProvider {
 			throw new SpringRedditException("exception while public key from key store");
 		}
 	}
+	
+	public boolean validateToken(String jwt) {
+		parser().setSigningKey(getPublicKey()).parseClaimsJws(jwt);
+        return true;
+	}
+
+	private PublicKey getPublicKey() {
+		try {
+			return keyStore.getCertificate("springblog").getPublicKey();
+		} catch (Exception e) {
+			throw new SpringRedditException("Exception while retrieving public key from store");
+		}
+	}
+	
+	public String getUsernameFromJwt(String token) {
+		Claims claims = parser()
+				.setSigningKey(getPublicKey())
+				.parseClaimsJws(token)
+				.getBody();
+		return claims.getSubject();
+	}
+	
 }
